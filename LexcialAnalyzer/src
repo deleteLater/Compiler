@@ -1,0 +1,35 @@
+#include <iostream>	//macro,newline,space,tab... will be ignore directly
+
+using namespace std;
+
+int main()
+{	
+	//number literals
+	int v1 = 0x1a + 077 + 125;
+
+	//string literals
+	string out = "Hello,World";
+
+	//identifiers
+	string _a_simple_identi;
+
+	//keywords
+	if(me || you )
+	{
+		//run this code
+		while(i <= j++ || i--);
+	}
+	else
+	{
+		//run another code
+		return -1;
+	}
+
+	//operators
+	cout << out << endl;
+	int v2 = (v1 += 15);
+	int v3 = 0xffffffff & 0xf ^ 0x1 | 0x7;
+
+	//report error
+	@78
+}
