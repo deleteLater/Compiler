@@ -291,7 +291,7 @@ void make_table()
         //for every production
         for(string p : grammer[g.first])
         {
-            for(size_t i = 0; i < p.size(); i++)
+            for(size_t i = 0; i < p.size() - 1; i++)
             {
                 //X(i), X(i+1) are both VT
                 if(is_terminal(p[i]) && is_terminal(p[i+1]))
@@ -299,9 +299,7 @@ void make_table()
                     table[get_index(p[i])][get_index(p[i+1])] == '=';
                 }
                 //X(i) and X(i+2) are both VT, X(i+1) is VN
-                if(i < p.size()-2 && 
-                    is_terminal(p[i]) && is_terminal(p[i+2]) &&
-                    !is_terminal(p[i+1]))
+                if(i < p.size()-2 && is_terminal(p[i]) && is_terminal(p[i+2]) && !is_terminal(p[i+1]))
                 {
                     table[get_index(p[i])][get_index(p[i+2])] = '=';
                 }
@@ -351,7 +349,6 @@ int main(int argc, char const *argv[])
     init_VTs();
     init_marked();
     init_terminals();
-
     make_firstVT();
     make_lastVT();
     make_table();
