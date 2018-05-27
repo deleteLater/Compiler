@@ -25,15 +25,17 @@ using namespace std;
  */
 map<char, set<string>> grammer
 {
+    /*
+    {'S',{"#E#"}},
     {'E', {"E+T", "T"}},
     {'T', {"T*F", "F"}},
     {'F', {"(E)", "i"}}
-   /*
+    */
+    {'S',{"#E#"}},
     {'E',{"E+T","T"}},
     {'T',{"T*F","F"}},
     {'F',{"P^F","P"}},
     {'P',{"(E)","i"}}
-    */
 };
 
 /*
@@ -228,15 +230,132 @@ void make_lastVT()
     }
 }
 
+/*
+ * Make precedence_table based on firstVT and lastVT
+ */
+set<char> terminals;
+string vt_string{""};
+void init_terminals()
+{
+    terminals.insert('#');
+    for(auto v : grammer)
+    {
+        for(auto x : v.second)
+        {
+            //traveral every production
+            for(char c : x)
+            {
+                if(!isupper(c))
+                {
+                    terminals.insert(c);
+                }
+            }
+        }
+    }
+    for(auto v : terminals)
+        vt_string += v;
+}
+size_t get_index(char ch)
+{
+    for(size_t i = 0; i < vt_string.size(); i++)
+    {
+        if(vt_string[i] == ch)
+            return i;
+    }
+}
+bool is_terminal(char ch)
+{
+    return terminals.find(ch) != terminals.end();
+}
+char **table = nullptr;
+void make_table()
+{
+    //init table
+    size_t ts = terminals.size();
+    table = new char*[ts];
+    for(size_t i = 0; i < ts; i++)
+    {
+        table[i] = new char[ts];
+    }
+    for(size_t i = 0; i < ts; i++)
+    {
+        for(size_t j = 0; j < ts; j++)
+        {
+            table[i][j] = '$';
+        }
+    }
+
+    //make table
+    for(auto g : grammer)
+    {
+        //for every production
+        for(string p : grammer[g.first])
+        {
+            for(size_t i = 0; i < p.size(); i++)
+            {
+                //X(i), X(i+1) are both VT
+                if(is_terminal(p[i]) && is_terminal(p[i+1]))
+                {
+                    table[get_index(p[i])][get_index(p[i+1])] == '=';
+                }
+                //X(i) and X(i+2) are both VT, X(i+1) is VN
+                if(i < p.size()-2 && 
+                    is_terminal(p[i]) && is_terminal(p[i+2]) &&
+                    !is_terminal(p[i+1]))
+                {
+                    table[get_index(p[i])][get_index(p[i+2])] = '=';
+                }
+                //X(i) is VT,X(i+1) is VN
+                if(is_terminal(p[i]) && !is_terminal(p[i+1]))
+                {
+                    for(auto v : firstVT[p[i+1]])
+                    {
+                        table[get_index(p[i])][get_index(v)] = '<';
+                    }
+                }
+                //X(i) is VN,X(i+1) is VT
+                if(!is_terminal(p[i]) && is_terminal(p[i+1]))
+                {
+                    for(auto v : lastVT[p[i]])
+                    {
+                        table[get_index(v)][get_index(p[i+1])] = '>';
+                    }
+                }
+            }
+        }
+    }
+}
+void print_table()
+{
+    cout << "  ";
+    size_t ts = terminals.size();
+    for(auto x : terminals)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+    for(size_t i = 0; i < ts; i++)
+    {
+        cout << vt_string[i] << " ";
+        for(size_t j = 0; j < ts; j++)
+        {
+            cout << table[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     //must start with init
     init_VTs();
     init_marked();
+    init_terminals();
 
     make_firstVT();
     make_lastVT();
-    print_firstVT();
-    print_lastVT();
+    make_table();
+    print_table();
+
     return 0;
 }
