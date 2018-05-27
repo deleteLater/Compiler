@@ -25,17 +25,17 @@ using namespace std;
  */
 map<char, set<string>> grammer
 {
-    /*
     {'S',{"#E#"}},
     {'E', {"E+T", "T"}},
     {'T', {"T*F", "F"}},
     {'F', {"(E)", "i"}}
-    */
+    /*
     {'S',{"#E#"}},
     {'E',{"E+T","T"}},
     {'T',{"T*F","F"}},
     {'F',{"P^F","P"}},
     {'P',{"(E)","i"}}
+    */
 };
 
 /*
@@ -325,22 +325,111 @@ void make_table()
 }
 void print_table()
 {
-    cout << "  ";
+    cout << "   ";
     size_t ts = terminals.size();
     for(auto x : terminals)
     {
-        cout << x << " ";
+        cout << x << "  ";
     }
     cout << endl;
     for(size_t i = 0; i < ts; i++)
     {
-        cout << vt_string[i] << " ";
+        cout << vt_string[i] << "  ";
         for(size_t j = 0; j < ts; j++)
         {
-            cout << table[i][j] << " ";
+            cout << table[i][j] << "  ";
         }
         cout << endl;
     }
+}
+int exceed_to(char ch1,char ch2)
+{
+    char flag = table[get_index(ch1)][get_index(ch2)];
+    if(flag == '>')
+        return 1;
+    else if(flag == '<')
+        return -1;
+    return 0;
+}
+
+/*
+ * Parse string based on operator-precedence table
+ */
+string production_structrue(string grammer)
+{
+    string ret{};
+    for(auto v : grammer)
+    {
+        if(is_terminal(v))
+            ret += 't';
+        else
+            ret += 'n';
+    }
+    return ret;
+}
+char reduction(string src)
+{
+    string src_structure = production_structrue(src);
+    for(auto v : grammer)
+    {
+        for(auto x : v.second)
+        {
+            if(production_structrue(x) == src_structure)
+                return v.first;
+        }
+    }
+}
+void parse(string input)
+{
+    char stack[10];
+    stack[0] = '#';
+    int top = 0;
+    char nextch = input[0];
+    int topVT_ptr = 0;
+    char topVT{};
+    while(nextch != '#' || topVT != '#')
+    {
+        (is_terminal(stack[top]) == true) ? (topVT_ptr = top) : (topVT_ptr = top -1);
+        topVT = stack[topVT_ptr];
+        if(exceed_to(topVT,nextch) <= 0)
+        {
+            stack[++top] = nextch;
+            nextch = input[top];
+        }
+        else if(exceed_to(topVT,nextch) == 1)
+        {
+            (is_terminal(stack[topVT_ptr-1]) == true) ? (topVT_ptr--) : (topVT_ptr -= 2);
+            while(exceed_to(stack[topVT_ptr],topVT) == 0)
+            {
+                (is_terminal(stack[topVT_ptr-1]) == true) ? (topVT_ptr--) : (topVT_ptr -= 2);
+            }
+            string prime_phrase {};
+            for(size_t i = topVT_ptr + 1; i <= top; i++)
+            {
+                prime_phrase += stack[i];
+            }
+            top = topVT_ptr + 1;
+            stack[top] = reduction(prime_phrase);
+            (is_terminal(stack[top]) == true) ? (topVT_ptr = top) : (topVT_ptr = top -1);
+            topVT = stack[topVT_ptr];
+        }
+        else 
+        {
+            cout << "error" << endl;
+            return ;
+        }
+        cout << "stack value: ";
+        string values {};
+        for(size_t i = 0; i <= top; i++)
+        {
+            values += stack[i];
+        }
+        cout << left << setw(8) << values;
+        cout << "\tnextch:" << nextch;
+        cout << "\ttopVT:" << topVT;
+        cout << endl;
+    }
+    cout << "Accept!" << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -349,10 +438,12 @@ int main(int argc, char const *argv[])
     init_VTs();
     init_marked();
     init_terminals();
+
+    //make operator-precedence table
     make_firstVT();
     make_lastVT();
     make_table();
-    print_table();
+    parse("i+i*i#");
 
     return 0;
 }
