@@ -1,7 +1,6 @@
 This is a simple LexicalAnalyzer
 
-	on ubuntu(if on windows just config your envPath):
-	compile parse.cpp with
-		g++ analyze.cpp -o analyzer
-	run with
-		./analyzer
+    compile parse.cpp with
+	g++ analyze.cpp -o analyzer
+    run with
+	./analyzer
