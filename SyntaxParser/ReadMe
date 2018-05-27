@@ -1,6 +1,5 @@
 This is a simple SyntaxParser
 
-    on ubuntu(if on windows just config your envPath)
     compile parse.cpp with
         g++ parse.cpp -o parser
     run with
