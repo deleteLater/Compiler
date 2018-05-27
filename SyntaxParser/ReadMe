@@ -1,10 +1,6 @@
 This is a simple SyntaxParser
-<<<<<<< HEAD
 
-    compile parse.cpp with
-=======
    compile parse.cpp with
->>>>>>> e3696717ec8ad6c0080fc82f19e1223e0d1695a7
         g++ parse.cpp -o parser
         
    run with
