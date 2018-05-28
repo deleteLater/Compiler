@@ -361,7 +361,7 @@ string production_structrue(string grammer)
     for(auto v : grammer)
     {
         if(is_terminal(v))
-            ret += 't';
+            ret += v;
         else
             ret += 'n';
     }
