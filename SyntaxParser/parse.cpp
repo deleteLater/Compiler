@@ -441,8 +441,18 @@ int main(int argc, char const *argv[])
 
     //make operator-precedence table
     make_firstVT();
+    cout << "firstVT:\n";
+    print_firstVT();
+    cout << endl;
     make_lastVT();
+    cout << "lastVT:\n";
+    print_lastVT();
+    cout << endl;    
     make_table();
+    cout << "Operator-Precedence Table:\n";
+    print_table();
+    cout << endl;
+    cout << "input string: i+i*i#" << endl;
     parse("i+i*i#");
 
     return 0;
