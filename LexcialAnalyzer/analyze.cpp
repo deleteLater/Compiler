@@ -104,6 +104,7 @@ void generate_token();
  */
 int main(int argc, char const *argv[])
 {
+    generate_token();
     return 0;
 }
 
